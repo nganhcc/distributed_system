@@ -54,7 +54,7 @@ func main() {
 	// a big difference from real MapReduce is that all the
 	// intermediate data is in one place, intermediate[],
 	// rather than being partitioned into NxM buckets.
-	//
+	// N files, M buckets
 
 	sort.Sort(ByKey(intermediate))
 
