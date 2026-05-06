@@ -178,19 +178,57 @@ The main implementation work in this lecture was:
 - final output generation
 - plugin loading for different MapReduce applications
 
-## Testing Notes
+## Build
 
-The test script runs several scenarios:
+Build the application plugin and the coordinator/worker binaries from `6.824/src/main`:
+
+```sh
+cd 6.824/src/main
+go build -buildmode=plugin -o wc.so ../mrapps/wc.go
+go build -o mrcoordinator mrcoordinator.go
+go build -o mrworker mrworker.go
+go build -o mrsequential mrsequential.go
+```
+
+If you change anything under `6.824/src/mr`, rebuild the plugin again. The Go plugin loader requires the plugin and worker to be built against the exact same version of package `6.824/mr`.
+
+## Run
+
+Run the coordinator with the input files:
+
+```sh
+go run mrcoordinator.go pg-*.txt
+```
+
+Run one or more workers in separate terminals:
+
+```sh
+go run mrworker.go wc.so
+```
+
+The workers load the `wc.so` plugin and repeatedly ask the coordinator for map or reduce work until the job is finished.
+
+## Test
+
+The main test script is:
+
+```sh
+bash test-mr.sh
+```
+
+That script checks:
 
 - word count correctness
 - indexer correctness
 - map parallelism
 - reduce parallelism
 - job count
-- early exit
+- early exit behavior
 - crash recovery
 
-On macOS, the original script expected GNU utilities like `timeout`, so I made the test harness portable instead of changing the core algorithm.
+If you run on macOS, use `bash` instead of `sh` for this script. The script also assumes the Unix socket path used by `coordinatorSock()` matches the test harness.
+
+
 
 ## Short Summary
 
